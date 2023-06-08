@@ -63,6 +63,37 @@ class CompanyDAL {
       throw error;
     }
   }
+
+  static async findCompanyById(compId) {
+    try {
+      // get company data from db
+      const { rows } = await pool.query({
+        name: "findCompanyById",
+        text: "SELECT * FROM companies WHERE id=$1",
+        values: [compId],
+      });
+
+      // return company
+      return rows[0];
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  static async findAllCompanies() {
+    try {
+      // get all companies from db
+      const { rows } = await pool.query({
+        name: "getAllCompanies",
+        text: "select * from companies",
+      });
+
+      // return
+      return rows;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }
 
 // export companyDAL class

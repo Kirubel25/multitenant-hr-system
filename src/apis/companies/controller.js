@@ -32,7 +32,7 @@ exports.createCompany = async (req, res, next) => {
 };
 
 // find all companies of a user
-exports.findAllCompany = async (req, res, next) => {
+exports.findAllUserCompany = async (req, res, next) => {
   try {
     const id = req.user.id;
     // get all companies
@@ -45,5 +45,42 @@ exports.findAllCompany = async (req, res, next) => {
     });
   } catch (error) {
     throw error;
+  }
+};
+
+// find company by id
+exports.findCompanyById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    // get company
+    const company = await CompanyDAL.findCompanyById(id);
+
+    // check if the company exist or not\
+    if (!company) return next(new AppError("No company With this id", 400));
+
+    // return
+    res.status(200).json({
+      status: "Success",
+      data: { company },
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+exports.findAllCompanies = async (req, res, next) => {
+  try {
+    // get company
+    const companies = await CompanyDAL.findAllCompanies();
+    if (!companies) return next(AppError("No compaanies found", 404));
+
+    // return all companies
+    res.status(200).json({
+      status: "Success",
+      message: { companies },
+    });
+  } catch (error) {
+    throw new Error(error);
   }
 };
