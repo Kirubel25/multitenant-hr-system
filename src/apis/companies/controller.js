@@ -1,4 +1,5 @@
 const AppError = require("../../../utils/appError");
+const CompanyDAL = require("./dal");
 const companyDAL = require("./dal");
 /**
  * companies controller
@@ -27,5 +28,22 @@ exports.createCompany = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+// find all companies of a user
+exports.findAllCompany = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+    // get all companies
+    const companies = await CompanyDAL.findcompaniesOfUser(id);
+
+    // response
+    res.status(200).json({
+      status: "Success",
+      data: { companies },
+    });
+  } catch (error) {
+    throw error;
   }
 };

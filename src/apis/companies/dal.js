@@ -47,6 +47,22 @@ class CompanyDAL {
       client.release();
     }
   }
+
+  static async findcompaniesOfUser(userId) {
+    try {
+      // get all companies from db
+      const { rows } = await pool.query({
+        name: "findAllCompanies",
+        text: "SELECT * FROM companies WHERE owner=$1",
+        values: [userId],
+      });
+
+      // return all companies creqated by the user
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 // export companyDAL class
