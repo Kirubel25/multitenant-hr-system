@@ -96,7 +96,7 @@ class ClientDAL {
     try {
       const { rows } = await pool.query({
         name: "findByEmail",
-        text: "select * from users where email=$1",
+        text: "select * from public.users where email=$1",
         values: [email],
       });
 

@@ -69,7 +69,7 @@ class CompanyDAL {
       // get company data from db
       const { rows } = await pool.query({
         name: "findCompanyById",
-        text: "SELECT * FROM companies WHERE id=$1",
+        text: "SELECT * FROM public.companies WHERE id=$1",
         values: [compId],
       });
 
