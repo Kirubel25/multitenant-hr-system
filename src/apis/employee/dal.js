@@ -1,3 +1,4 @@
+const Client = require("pg/lib/client");
 const pool = require("../../../loaders/pgDB");
 
 class EmployeeDAL {
@@ -64,13 +65,65 @@ class EmployeeDAL {
     }
   }
   static async findAllEmployees() {
-    const { rows } = pool.query({
-      name: "findAllEmployees",
-      text: "select * from employees",
-    });
+    try {
+      const { rows } = await pool.query({
+        name: "findAllEmployees",
+        text: "select * from employees",
+      });
 
-    // return all employees
-    return rows;
+      // return all employees
+      return rows;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  static async updateEmployee(data, schema_name) {
+    // need a single connection for a tansaction
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      // update employee on public
+      const { rows } = await client.query({
+        name: "UpdateUserOnPublic",
+        text: "update public.users set full_name=coalesce($1,full_name), email=coalesce($2,email),gender=coalesce($3,gender)::public.gender_types,password=coalesce($4,password),status=coalesce($5,status)::public.status_types,role=coalesce($6,role),schema_name=coalesce($7,schema_name) where id=$8 RETURNING *",
+        values: [
+          data.full_name,
+          data.email,
+          data.gender,
+          data.password,
+          data.status,
+          data.role,
+          data.schema_name,
+          data.publicId,
+        ],
+      });
+
+      // update employee on the comapny schema
+      await client.query({
+        name: "updaeEmployee",
+        text: "update employees set full_name=coalesce($1,full_name), email=coalesce($2, email),password=coalesce($3,password),status=coalesce($4,status)::public.status_types,role=coalesce($5,role),schema_name=coalesce($6,schema_name) where id=$7 RETURNING *",
+        values: [
+          data.full_name,
+          data.email,
+          data.password,
+          data.status,
+          data.role,
+          data.schema_name,
+          data.id,
+        ],
+      });
+
+      await client.query("COMMIT");
+
+      // return updated employee
+      return rows;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }
 

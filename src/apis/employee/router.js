@@ -9,7 +9,8 @@ router
   .get(authorization, pathChanger, employeeController.allEmployees);
 router
   .route("/:id")
-  .get(authorization, pathChanger, employeeController.findEmployeeById);
+  .get(authorization, pathChanger, employeeController.findEmployeeById)
+  .patch(authorization, pathChanger, employeeController.updateEmployees);
 router
   .route("/:compId")
   .post(

@@ -135,7 +135,6 @@ exports.signIn = async (req, res, next) => {
     }
     //Find user by email
     const user = await ClientDAL.findByEmail(email);
-    console.log(user.password);
 
     if (!user || !checkHash(password, user.password)) {
       return next(new AppError("check for your credential", 400));

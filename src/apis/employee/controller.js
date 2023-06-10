@@ -12,7 +12,7 @@ exports.addEmployee = async (req, res, next) => {
     const company = await CompanyDAL.findCompanyById(compId);
 
     // check if company exist
-    if (!company) return next(AppError("company does not exist", 404));
+    if (!company) return next(new AppError("company does not exist", 404));
 
     // Check required fields
     if (!data.full_name || !data.email || !data.role) {
@@ -65,15 +65,46 @@ exports.findEmployeeById = async (req, res, next) => {
 };
 
 exports.allEmployees = async (req, res, next) => {
-  const employees = await EmployeeDAL.findAllEmployees();
+  try {
+    const employees = await EmployeeDAL.findAllEmployees();
 
-  // check if employees exist in the company
-  if (!employees)
-    return next(new AppError("No Employees found in the company"));
+    // check if employees exist in the company
+    if (!employees)
+      return next(new AppError("No Employees found in the company"));
 
-  // return all employees
-  res.status(200).json({
-    status: "Success",
-    data: { employees },
-  });
+    // return all employees
+    res.status(200).json({
+      status: "Success",
+      data: { employees },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.updateEmployees = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    data.id = id;
+
+    // check if employee exist
+    const employee = await EmployeeDAL.findEmployeeById(req.params.id);
+    if (!employee) return next(new AppError("user does not exist", 404));
+
+    // check if user exist on public
+    const user = await ClientDAL.findByEmail(employee.email);
+    if (!user) return next(new AppError("user does not exist", 404));
+
+    data.publicId = user.id;
+
+    const UpdatedEmp = await EmployeeDAL.updateEmployee(data);
+
+    res.status(200).json({
+      status: "Success",
+      data: { UpdatedEmp },
+    });
+  } catch (error) {
+    throw error;
+  }
 };
