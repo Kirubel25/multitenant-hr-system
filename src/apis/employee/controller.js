@@ -44,3 +44,36 @@ exports.addEmployee = async (req, res, next) => {
     throw new Error(error);
   }
 };
+
+exports.findEmployeeById = async (req, res, next) => {
+  try {
+    const empId = req.params.id;
+
+    // find user in the company with given id
+    const employee = await EmployeeDAL.findEmployeeById(empId);
+
+    if (!employee)
+      return next(new AppError("Employee does not exist in your company", 404));
+
+    res.status(200).json({
+      status: "Success",
+      data: { employee },
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+exports.allEmployees = async (req, res, next) => {
+  const employees = await EmployeeDAL.findAllEmployees();
+
+  // check if employees exist in the company
+  if (!employees)
+    return next(new AppError("No Employees found in the company"));
+
+  // return all employees
+  res.status(200).json({
+    status: "Success",
+    data: { employees },
+  });
+};

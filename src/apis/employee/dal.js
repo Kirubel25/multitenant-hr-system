@@ -48,6 +48,30 @@ class EmployeeDAL {
       client.release();
     }
   }
+  static async findEmployeeById(id) {
+    try {
+      // find employee from db with given id
+      const { rows } = await pool.query({
+        name: "findEmployeeById",
+        text: "select * from employees where id=$1",
+        values: [id],
+      });
+
+      // return employee
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+  static async findAllEmployees() {
+    const { rows } = pool.query({
+      name: "findAllEmployees",
+      text: "select * from employees",
+    });
+
+    // return all employees
+    return rows;
+  }
 }
 
 module.exports = EmployeeDAL;

@@ -5,6 +5,12 @@ const pathChanger = require("../interceptor");
 const employeeController = require("./controller");
 
 router
+  .route("/")
+  .get(authorization, pathChanger, employeeController.allEmployees);
+router
+  .route("/:id")
+  .get(authorization, pathChanger, employeeController.findEmployeeById);
+router
   .route("/:compId")
   .post(
     authorization,
