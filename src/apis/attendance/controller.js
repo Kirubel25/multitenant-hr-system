@@ -7,6 +7,7 @@ exports.create = async (req, res, next) => {
   try {
     // Incoming data
     const data = req.body;
+
     if ((!data.date, !data.presence))
       return next(new AppError("Please fill required fields", 400));
 
