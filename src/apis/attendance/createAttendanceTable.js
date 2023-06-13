@@ -3,6 +3,7 @@
  */
 const createAttendanceTable = async (dbConnectionClient) => {
   try {
+    // create attendance table
     await dbConnectionClient.query({
       name: "createAttendanceTable",
       text: `CREATE TABLE attendance(
